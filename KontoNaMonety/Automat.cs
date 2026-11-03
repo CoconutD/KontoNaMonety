@@ -1,38 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿using System.Globalization;
 
 namespace KontoNaMonety
 {
     internal class Automat
     {
-        private int _iloscMonet;
-        private readonly decimal[] _przyjmowaneMonety = new decimal[] { 5, 2, 1, 0.5m, 0.2m, 0.1m };
+        private readonly decimal[] _przyjmowaneMonety = { 5, 2, 1, 0.5m, 0.2m, 0.1m };
+        private readonly Dictionary<decimal, int> _liczbaMonet = new();
 
+        public Automat()
+        {
+            foreach (decimal moneta in _przyjmowaneMonety)
+                _liczbaMonet[moneta] = 0;
+        }
 
-        // Stwórz metodę WrzucMonete
         public void WrzucMonete(KontoBankowe konto, string moneta)
         {
-            // Sprawdzamy czy monetę da się W OGÓLE sparsować na jakiś decimal
             bool czyUdanyParse = decimal.TryParse(moneta, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal wartoscMonety);
 
             if (!czyUdanyParse)
             {
-                Console.WriteLine("Nieudany odczyt monety.");
+                Console.WriteLine("nieudany odczyt");
                 return;
             }
 
-            // Sprawdź czy monety są z zakresu _przyjmowaneMonety
+            if (!_liczbaMonet.ContainsKey(wartoscMonety))
+            {
+                Console.WriteLine("zła moneta");
+                return;
+            }
+
+            konto.Wplac(wartoscMonety);
+            _liczbaMonet[wartoscMonety]++;
+            Console.WriteLine($"moneta przyjęta: {wartoscMonety}");
+        }
+
+        public void PokazMonety()
+        {
+            decimal suma = 0;
+
             foreach (decimal nominal in _przyjmowaneMonety)
             {
-                // jeżeli tak, to zwiększ saldo konta i ilość monet w automacie
-                if (wartoscMonety == nominal)
-                {
-                    konto.Saldo += nominal;
-                    _iloscMonet++;
-                }
+                int liczba = _liczbaMonet[nominal];
+                suma += nominal * liczba;
+                Console.WriteLine($"{nominal} zł - {liczba} monet");
             }
+
+            Console.WriteLine($"Łączna wartość: {suma} zł");
         }
     }
 }

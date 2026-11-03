@@ -1,36 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace KontoNaMonety
+﻿namespace KontoNaMonety
 {
     internal class KontoBankowe
     {
         private decimal _saldo;
-        private string _numer;
+        private static int _następnyNumer = 1;
 
-        public decimal Saldo
+        public int Numer { get; }
+
+        public KontoBankowe(decimal saldoPoczatkowe = 0)
         {
-            get { return _saldo; }
-            set { _saldo = value; }
-        }
-        public KontoBankowe(string numer, decimal saldoPoczatkowe)
-        {
+            if (saldoPoczatkowe < 0)
+                throw new ArgumentException("Stan początkowy nie może być ujemny.");
+
             _saldo = saldoPoczatkowe;
-            _numer = numer;
+            Numer = _następnyNumer++;
         }
 
-        public string StanKonta()
+        public decimal StanKonta()
         {
-            return $"Stan konta: {Saldo} zł";
+            return _saldo;
         }
+
         public void Wplac(decimal kwota)
         {
-            {
-                if (kwota < 0)
-                    throw new ArgumentException("Kwota nie może być ujemna.");
-                _saldo += kwota;
-            }
+            if (kwota < 0)
+                throw new ArgumentException("Kwota nie może być ujemna.");
+
+            _saldo += kwota;
         }
     }
 }
