@@ -1,38 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
+﻿  using System.Globalization;
 
 namespace KontoNaMonety
 {
     internal class Automat
     {
-        private int _iloscMonet;
-        private readonly decimal[] _przyjmowaneMonety = new decimal[] { 5, 2, 1, 0.5m, 0.2m, 0.1m };
+        private readonly decimal[] _przyjmowaneMonety = { 5, 2, 1, 0.5m, 0.2m, 0.1m };
+        private readonly int[] _liczbaMonet = new int[6];
+        private readonly int[] _limityMonet = { 3, 3, 3, 3, 3, 3 };
+        private int _liczbaNieudanychOdczytow;
+        private int _liczbaOdrzuconychMonet;
 
+        // Tworzy automat i ustawia liczbę każdej monety na zero.
+        public Automat()
+        {
+            // Tablica _liczbaMonet ma 0 w każdym elemencie, więc nie trzeba jej inicjalizowac
+        }
 
-        // Stwórz metodę WrzucMonete
+        // Odczytuje monetee sprawdza jej nominal i wplaca ja na konto.
         public void WrzucMonete(KontoBankowe konto, string moneta)
         {
-            // Sprawdzamy czy monetę da się W OGÓLE sparsować na jakiś decimal
             bool czyUdanyParse = decimal.TryParse(moneta, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out decimal wartoscMonety);
 
             if (!czyUdanyParse)
             {
-                Console.WriteLine("Nieudany odczyt monety.");
+                _liczbaNieudanychOdczytow++;
+                Console.WriteLine("nieudany odczyt");
                 return;
             }
 
-            // Sprawdź czy monety są z zakresu _przyjmowaneMonety
-            foreach (decimal nominal in _przyjmowaneMonety)
+            int numerMonety = -1;
+
+            for (int i = 0; i < _przyjmowaneMonety.Length; i++)
             {
-                // jeżeli tak, to zwiększ saldo konta i ilość monet w automacie
-                if (wartoscMonety == nominal)
+                if (_przyjmowaneMonety[i] == wartoscMonety)
                 {
-                    konto.Saldo += nominal;
-                    _iloscMonet++;
+                    numerMonety = i;
+                    break;
                 }
             }
+
+            if (numerMonety == -1)
+            {
+                _liczbaOdrzuconychMonet++;
+                Console.WriteLine("zła moneta");
+                return;
+            }
+
+            if (_liczbaMonet[numerMonety] >= _limityMonet[numerMonety])
+            {
+                _liczbaOdrzuconychMonet++;
+                Console.WriteLine($"limit monet {wartoscMonety} zł został osiągnięty");
+                return;
+            }
+
+            konto.Wplac(wartoscMonety);
+            _liczbaMonet[numerMonety]++;
+            Console.WriteLine($"moneta przyjęta: {wartoscMonety}");
+        }
+
+        // Wyświetla liczbę monet każdego nominału oraz ich łączną wartość.
+        public void PokazMonety()
+        {
+            decimal suma = 0;
+
+            for (int i = 0; i < _przyjmowaneMonety.Length; i++)
+            {
+                decimal nominal = _przyjmowaneMonety[i];
+                suma += nominal * _liczbaMonet[i];
+                Console.WriteLine($"{nominal} zł - {_liczbaMonet[i]} monet");
+            }
+
+            Console.WriteLine($"Łączna wartość: {suma} zł");
+        }
+
+        // Wyświetla liczbe nieudanych odczytów i odrzuconych monet.
+        public void PokazHistorie()
+        {
+            Console.WriteLine($"Nieudane odczyty: {_liczbaNieudanychOdczytow}");
+            Console.WriteLine($"Odrzucone monety: {_liczbaOdrzuconychMonet}");
         }
     }
 }
