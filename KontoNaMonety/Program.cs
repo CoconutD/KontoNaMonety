@@ -25,6 +25,9 @@
             automat.PokazMonety();
             automat.PokazHistorie();
 
+            Console.WriteLine("Historia operacji:");
+            automat.PokazHistorieOperacji();
+
             KontoBankowe drugieKonto = new KontoBankowe();
             Console.WriteLine($"Numer drugiego konta: {drugieKonto.Numer}");
         }

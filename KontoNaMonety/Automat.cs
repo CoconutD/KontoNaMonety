@@ -9,6 +9,7 @@ namespace KontoNaMonety
         private readonly int[] _limityMonet = { 3, 3, 3, 3, 3, 3 };
         private int _liczbaNieudanychOdczytow;
         private int _liczbaOdrzuconychMonet;
+        private readonly List<Operacja> _historiaOperacji = new List<Operacja>();
 
         // Tworzy automat i ustawia liczbę każdej monety na zero.
         public Automat()
@@ -25,6 +26,7 @@ namespace KontoNaMonety
             {
                 _liczbaNieudanychOdczytow++;
                 Console.WriteLine("nieudany odczyt");
+                DodajDoHistorii(moneta, "nieudany odczyt");
                 return;
             }
 
@@ -43,6 +45,7 @@ namespace KontoNaMonety
             {
                 _liczbaOdrzuconychMonet++;
                 Console.WriteLine("zła moneta");
+                DodajDoHistorii(moneta, "zła moneta");
                 return;
             }
 
@@ -50,12 +53,21 @@ namespace KontoNaMonety
             {
                 _liczbaOdrzuconychMonet++;
                 Console.WriteLine($"limit monet {wartoscMonety} zł został osiągnięty");
+                DodajDoHistorii(moneta, "odrzucona - limit monet");
                 return;
             }
 
             konto.Wplac(wartoscMonety);
             _liczbaMonet[numerMonety]++;
             Console.WriteLine($"moneta przyjęta: {wartoscMonety}");
+            DodajDoHistorii(moneta, "przyjęta");
+        }
+
+        // Zapisuje wrzuconą monetę i wynik do historii operacji.
+        private void DodajDoHistorii(string moneta, string wynik)
+        {
+            int numer = _historiaOperacji.Count + 1;
+            _historiaOperacji.Add(new Operacja(numer, moneta, wynik));
         }
 
         // Wyświetla liczbę monet każdego nominału oraz ich łączną wartość.
@@ -78,6 +90,21 @@ namespace KontoNaMonety
         {
             Console.WriteLine($"Nieudane odczyty: {_liczbaNieudanychOdczytow}");
             Console.WriteLine($"Odrzucone monety: {_liczbaOdrzuconychMonet}");
+        }
+
+        // Wyświetla wszystkie operacje po kolei.
+        public void PokazHistorieOperacji()
+        {
+            if (_historiaOperacji.Count == 0)
+            {
+                Console.WriteLine("Brak operacji.");
+                return;
+            }
+
+            foreach (Operacja operacja in _historiaOperacji)
+            {
+                Console.WriteLine($"{operacja.Numer}. {operacja.Moneta} - {operacja.Wynik}");
+            }
         }
     }
 }
