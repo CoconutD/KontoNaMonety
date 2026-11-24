@@ -4,8 +4,9 @@ namespace KontoNaMonety
 {
     internal class Automat
     {
-        private readonly decimal[] _przyjmowaneMonety = { 5, 2, 1, 0.5m, 0.2m, 0.1m };
-        private readonly int[] _liczbaMonet = new int[6];
+        public static readonly decimal[] Nominaly = { 5, 2, 1, 0.5m, 0.2m, 0.1m };
+
+        private readonly int[] _liczbaMonet = new int[Nominaly.Length];
         private readonly int[] _limityMonet = { 3, 3, 3, 3, 3, 3 };
         private int _liczbaNieudanychOdczytow;
         private int _liczbaOdrzuconychMonet;
@@ -32,9 +33,9 @@ namespace KontoNaMonety
 
             int numerMonety = -1;
 
-            for (int i = 0; i < _przyjmowaneMonety.Length; i++)
+            for (int i = 0; i < Nominaly.Length; i++)
             {
-                if (_przyjmowaneMonety[i] == wartoscMonety)
+                if (Nominaly[i] == wartoscMonety)
                 {
                     numerMonety = i;
                     break;
@@ -75,9 +76,9 @@ namespace KontoNaMonety
         {
             decimal suma = 0;
 
-            for (int i = 0; i < _przyjmowaneMonety.Length; i++)
+            for (int i = 0; i < Nominaly.Length; i++)
             {
-                decimal nominal = _przyjmowaneMonety[i];
+                decimal nominal = Nominaly[i];
                 suma += nominal * _liczbaMonet[i];
                 Console.WriteLine($"{nominal} zł - {_liczbaMonet[i]} monet");
             }

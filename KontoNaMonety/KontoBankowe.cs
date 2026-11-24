@@ -31,5 +31,15 @@
 
             _saldo += kwota;
         }
+
+        // Wypłaca kwotę z konta. Zwraca false, gdy wypłata się nie udała.
+        public bool Wyplac(decimal kwota)
+        {
+            if (kwota <= 0 || kwota > _saldo)
+                return false;
+
+            _saldo -= kwota;
+            return true;
+        }
     }
 }  

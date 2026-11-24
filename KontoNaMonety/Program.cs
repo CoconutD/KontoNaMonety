@@ -30,6 +30,22 @@
 
             KontoBankowe drugieKonto = new KontoBankowe();
             Console.WriteLine($"Numer drugiego konta: {drugieKonto.Numer}");
+
+            Console.WriteLine();
+            Console.WriteLine("--- Bankomat ---");
+
+            Bankomat bankomat = new Bankomat();
+            bankomat.ZaladujMonety(2, 5);
+            bankomat.ZaladujMonety(1, 5);
+            bankomat.ZaladujMonety(0.5m, 4);
+            bankomat.ZaladujMonety(3, 10);
+
+            bankomat.Wyplac(kontoBankowe, 3.5m);
+            bankomat.Wyplac(kontoBankowe, 10);
+            bankomat.Wyplac(kontoBankowe, 0.3m);
+
+            Console.WriteLine($"Stan konta: {kontoBankowe.StanKonta()} zł");
+            bankomat.PokazPojemnik();
         }
     }
 }
